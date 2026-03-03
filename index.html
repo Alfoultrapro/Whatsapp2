@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp 2.0 - Beta Tester</title>
+    <style>
+        body { font-family: 'Segoe UI', Helvetica, Arial, sans-serif; margin: 0; background-color: #0b141a; color: #e9edef; overflow: hidden; }
+        
+        /* Header con Menu Superiore */
+        .header { background-color: #202c33; padding: 15px 15px 0 15px; position: sticky; top: 0; z-index: 100; }
+        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .header h1 { color: #8696a0; font-size: 20px; margin: 0; }
+        .tabs { display: flex; justify-content: space-around; color: #8696a0; font-weight: bold; font-size: 14px; text-transform: uppercase; }
+        .tab-active { color: #00a884; border-bottom: 3px solid #00a884; padding-bottom: 10px; flex: 1; text-align: center; }
+        .tab { flex: 1; text-align: center; padding-bottom: 10px; }
+
+        /* Lista Chat */
+        .chat-container { height: calc(100vh - 100px); overflow-y: auto; }
+        .chat-item { display: flex; align-items: center; padding: 12px 15px; cursor: pointer; border-bottom: 1px solid #222d34; }
+        .chat-item:hover { background-color: #2a3942; }
+        .avatar { width: 50px; height: 50px; border-radius: 50%; margin-right: 15px; display: flex; align-items: center; justify-content: center; font-size: 22px; background-color: #6a7175; flex-shrink: 0; }
+        .chat-info { flex: 1; }
+        .chat-main { display: flex; justify-content: space-between; }
+        .chat-name { font-weight: 500; font-size: 16px; color: #e9edef; }
+        .chat-msg { font-size: 14px; color: #8696a0; margin-top: 2px; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; }
+
+        /* Finestra Chat Interattiva */
+        #chat-window { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #0b141a; background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); z-index: 200; flex-direction: column; }
+        .chat-header { background: #202c33; padding: 10px; display: flex; align-items: center; color: white; }
+        .back-btn { font-size: 24px; margin-right: 10px; cursor: pointer; color: #00a884; }
+        .messages-area { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; }
+        
+        /* Messaggi */
+        .msg { padding: 8px 12px; border-radius: 8px; margin-bottom: 8px; max-width: 85%; font-size: 15px; position: relative; line-height: 1.4; word-wrap: break-word; white-space: pre-wrap; }
+        .sent { background: #005c4b; align-self: flex-end; }
+        .received { background: #202c33; align-self: flex-start; }
+        
+        .input-area { background: #202c33; padding: 10px; display: flex; align-items: center; }
+        input { flex: 1; background: #2a3942; border: none; padding: 12px; border-radius: 25px; color: white; outline: none; }
+        .send-btn { background: #00a884; border: none; width: 45px; height: 45px; border-radius: 50%; margin-left: 10px; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+        .ticks { color: #53bdeb; font-size: 10px; margin-left: 5px; }
+    </style>
+</head>
+<body>
+
+<div id="main-ui">
+    <div class="header">
+        <div class="header-top">
+            <h1>WhatsApp 2</h1>
+            <div style="color: #8696a0;">🔍 &nbsp; ⋮</div>
+        </div>
+        <div class="tabs">
+            <div class="tab">📁</div>
+            <div class="tab-active">Chat</div>
+            <div class="tab">Stato</div>
+            <div class="tab">Chiamate</div>
+        </div>
+    </div>
+
+    <div class="chat-container" id="list-container">
+        </div>
+</div>
+
+<div id="chat-window">
+    <div class="chat-header">
+        <span class="back-btn" onclick="closeChat()">←</span>
+        <div class="avatar" id="header-avatar" style="width: 35px; height: 35px; font-size: 16px;"></div>
+        <span id="header-name" style="font-weight: bold; margin-left: 10px;"></span>
+    </div>
+    <div class="messages-area" id="msg-area"></div>
+    <div class="input-area">
+        <input type="text" id="user-input" placeholder="Scrivi un messaggio...">
+        <button class="send-btn" onclick="sendMsg()">➤</button>
+    </div>
+</div>
+
+<script>
+    const chats = [
+        { id: 'mamma', name: 'Mamma ❤️', last: 'Hai mangiato?', icon: '👩‍🍳', resp: 'sei adottato' },
+        { id: 'pesce', name: 'Pesce Rosso (RIP)', last: 'Glub glub...', icon: '🐠', resp: 'ki te muort me fatt muri e fam' },
+        { id: 'classe', name: 'GRUPPO CLASSE 📚', last: 'Quaglietta obbeso: Raga i compiti?', icon: '👨‍🎓', resp: 'visualizzato' },
+        { id: 'bibi', name: 'Joker', last: 'Ora parlo io', icon: '😲', resp: 'ORA parlo io' },
+        { id: 'ciccio', name: 'CiccioGamer89', last: 'Kekko!', icon: '🍔', resp: 'no ora faccio la denuncia' },
+        { id: 'bossetti', name: 'Massimo Bossetti', last: '#FreeBossetti', icon: '⛓️', resp: 'sono innocente giuro' },
+        { id: 'hitler', name: 'Adolf hitler', last: 'Heil', icon: '🫡', resp: 'Nein! Lo sapevo che dovevo sterminarli tutti!' },
+        { id: 'sal', name: 'Sal Da Vinci', last: 'Sanremo 2026', icon: '🎤', resp: 'Saremo io e te\nPer sempre\nLegati per la vita che\nSenza te\nNon vale niente\nNon ha senso vivere\nCon la mano sul petto\nIo te lo prometto\nDavanti a Dio\nSaremo io e te\nAccussì\nSarrà pe sempe sì' }
+    ];
+
+    let currentId = '';
+
+    // Funzione per mostrare le chat (chiamata all'avvio)
+    function renderChats() {
+        const container = document.getElementById('list-container');
+        container.innerHTML = ''; // Pulisce
+        chats.forEach(c => {
+            container.innerHTML += `
+                <div class="chat-item" onclick="openChat('${c.id}')">
+                    <div class="avatar">${c.icon}</div>
+                    <div class="chat-info">
+                        <div class="chat-main"><span class="chat-name">${c.name}</span></div>
+                        <span class="chat-msg">${c.last}</span>
+                    </div>
+                </div>`;
+        });
+    }
+
+    function openChat(id) {
+        currentId = id;
+        const chat = chats.find(c => c.id === id);
+        document.getElementById('header-name').innerText = chat.name;
+        document.getElementById('header-avatar').innerText = chat.icon;
+        document.getElementById('msg-area').innerHTML = `<div class="msg received" style="font-size: 11px; align-self: center; background: #182229; color: #8696a0; text-align: center;">I messaggi sono protetti con crittografia aliena di WhatsApp 2.</div>`;
+        document.getElementById('chat-window').style.display = 'flex';
+    }
+
+    function closeChat() {
+        document.getElementById('chat-window').style.display = 'none';
+    }
+
+    function sendMsg() {
+        const input = document.getElementById('user-input');
+        if(!input.value) return;
+        
+        appendMsg(input.value, 'sent');
+        input.value = '';
+
+        setTimeout(() => {
+            const chat = chats.find(c => c.id === currentId);
+            if(chat.resp === 'visualizzato') {
+                const messages = document.querySelectorAll('.sent');
+                const lastSent = messages[messages.length - 1];
+                if (!lastSent.innerHTML.includes('ticks')) {
+                    lastSent.innerHTML += '<span class="ticks"> ✔✔</span>';
+                }
+            } else {
+                appendMsg(chat.resp, 'received');
+            }
+        }, 1200);
+    }
+
+    function appendMsg(text, type) {
+        const area = document.getElementById('msg-area');
+        const div = document.createElement('div');
+        div.className = 'msg ' + type;
+        div.innerText = text;
+        area.appendChild(div);
+        area.scrollTop = area.scrollHeight;
+    }
+
+    // FACCIAMO PARTIRE IL CARICAMENTO DOPO CHE LA PAGINA È PRONTA
+    window.onload = renderChats;
+</script>
+</body>
+</html>
