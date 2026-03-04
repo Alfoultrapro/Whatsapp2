@@ -5,41 +5,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WhatsApp 2.0 - Beta Tester</title>
     <style>
-        body { font-family: 'Segoe UI', Helvetica, Arial, sans-serif; margin: 0; background-color: #0b141a; color: #e9edef; overflow: hidden; }
+                body { 
+            font-family: 'Segoe UI', Helvetica, Arial, sans-serif; 
+            margin: 0; 
+            background-color: #0b141a; 
+            color: #e9edef; 
+            /* Rimosso overflow: hidden da qui per permettere il movimento */
+        }
         
-        /* Header con Menu Superiore */
-        .header { background-color: #202c33; padding: 15px 15px 0 15px; position: sticky; top: 0; z-index: 100; }
-        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .header h1 { color: #8696a0; font-size: 20px; margin: 0; }
-        .tabs { display: flex; justify-content: space-around; color: #8696a0; font-weight: bold; font-size: 14px; text-transform: uppercase; }
-        .tab-active { color: #00a884; border-bottom: 3px solid #00a884; padding-bottom: 10px; flex: 1; text-align: center; }
-        .tab { flex: 1; text-align: center; padding-bottom: 10px; }
+        /* Header fisso in alto */
+        .header { 
+            background-color: #202c33; 
+            padding: 15px 15px 0 15px; 
+            position: sticky; 
+            top: 0; 
+            z-index: 100; 
+        }
 
-        /* Lista Chat */
-        .chat-container { height: calc(100vh - 100px); overflow-y: auto; }
-        .chat-item { display: flex; align-items: center; padding: 12px 15px; cursor: pointer; border-bottom: 1px solid #222d34; }
-        .chat-item:hover { background-color: #2a3942; }
-        .avatar { width: 50px; height: 50px; border-radius: 50%; margin-right: 15px; display: flex; align-items: center; justify-content: center; font-size: 22px; background-color: #6a7175; flex-shrink: 0; }
-        .chat-info { flex: 1; }
-        .chat-main { display: flex; justify-content: space-between; }
-        .chat-name { font-weight: 500; font-size: 16px; color: #e9edef; }
-        .chat-msg { font-size: 14px; color: #8696a0; margin-top: 2px; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; }
+        /* Contenitore chat con scroll abilitato */
+        .chat-container { 
+            height: calc(100vh - 110px); /* Sottrae l'altezza dell'header */
+            overflow-y: auto; /* Attiva lo scroll verticale */
+            -webkit-overflow-scrolling: touch; /* Rende lo scroll fluido su iPhone */
+        }
 
-        /* Finestra Chat Interattiva */
-        #chat-window { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #0b141a; background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); z-index: 200; flex-direction: column; }
-        .chat-header { background: #202c33; padding: 10px; display: flex; align-items: center; color: white; }
-        .back-btn { font-size: 24px; margin-right: 10px; cursor: pointer; color: #00a884; }
-        .messages-area { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; }
-        
-        /* Messaggi */
-        .msg { padding: 8px 12px; border-radius: 8px; margin-bottom: 8px; max-width: 85%; font-size: 15px; position: relative; line-height: 1.4; word-wrap: break-word; white-space: pre-wrap; }
-        .sent { background: #005c4b; align-self: flex-end; }
-        .received { background: #202c33; align-self: flex-start; }
-        
-        .input-area { background: #202c33; padding: 10px; display: flex; align-items: center; }
-        input { flex: 1; background: #2a3942; border: none; padding: 12px; border-radius: 25px; color: white; outline: none; }
-        .send-btn { background: #00a884; border: none; width: 45px; height: 45px; border-radius: 50%; margin-left: 10px; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 20px; }
-        .ticks { color: #53bdeb; font-size: 10px; margin-left: 5px; }
+        /* Nascondi la barra dello scroll se vuoi un look più pulito (opzionale) */
+        .chat-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        .chat-container::-webkit-scrollbar-thumb {
+            background-color: #374045;
+        }
+
     </style>
 </head>
 <body>
@@ -87,6 +84,8 @@
         { id: 'sal', name: 'Sal Da Vinci', last: 'Sanremo 2026', icon: '🎤', resp: 'Saremo io e te\nPer sempre\nLegati per la vita che\nSenza te\nNon vale niente\nNon ha senso vivere\nCon la mano sul petto\nIo te lo prometto\nDavanti a Dio\nSaremo io e te\nAccussì\nSarrà pe sempe sì' },
         { id: 'gesu', name: 'Gesù', last: 'scusa come mi hai chiamato?', icon: '✝️', resp: 'la prossima volta che mi chiami porco ti scomunico dalla vita' },
     { id: 'giovanni', name: 'giovanni', last: 'io dico...', icon: '🏳️‍🌈', resp: 'sei gay' },
+    { id: 'kebab', name: 'kebabbaro', last: 'kebab 5€', icon: '🥙', resp: 'salsa yogurt o piccante?' },
+    { id: 'trump', name: 'donald trump', last: 'sono il miglior presidente americano', icon: '🇺🇸', resp: '104 milioni di $ a israele, ORA!' },
     
     ];
 
