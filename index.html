@@ -93,19 +93,21 @@
     let currentId = '';
 
     // Funzione per mostrare le chat (chiamata all'avvio)
-    function renderChats() {
+        function renderChats() {
         const container = document.getElementById('list-container');
-        container.innerHTML = ''; // Pulisce
+        container.innerHTML = '';
         chats.forEach(c => {
             container.innerHTML += `
                 <div class="chat-item" onclick="openChat('${c.id}')">
                     <div class="avatar">${c.icon}</div>
                     <div class="chat-info">
-                        <div class="chat-main"><span class="chat-name">${c.name}</span></div>
+                        <span class="chat-name">${c.name}</span>
                         <span class="chat-msg">${c.last}</span>
                     </div>
                 </div>`;
         });
+        // Aggiunge uno spazio vuoto extra alla fine della generazione
+        container.innerHTML += `<div style="height: 100px;"></div>`;
     }
 
     function openChat(id) {
